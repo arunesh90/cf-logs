@@ -6,6 +6,7 @@ export class Worker {
   public async handle(event: FetchEvent) {
     const { request } = event
     const { headers } = request
+    const { cf }      = request
     const response = await fetch(request)
 
     const authKey    = process.env.AUTH_KEY as string
@@ -22,7 +23,7 @@ export class Worker {
         ip        : headers.get('cf-connecting-ip'),
         path      : new URL(request.url).pathname,
         host      : headers.get('host'),
-        country   : request.cf.country,
+        country   : cf ? cf.country : null,
         user_agent: headers.get('user-agent')
       })
     })
