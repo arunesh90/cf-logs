@@ -2,6 +2,15 @@
 import CloudflareWorkerGlobalScope from 'types-cloudflare-worker'
 declare var self: CloudflareWorkerGlobalScope
 
+interface cloudflareLog {
+  ip        : string,
+  path      : string,
+  host      : string,
+  country   : string | null,
+  user_agent: string,
+  cache?    : string
+}
+
 export class Worker {
   public async handle(event: FetchEvent) {
     const { request } = event
@@ -13,19 +22,27 @@ export class Worker {
     const logBaseURL = process.env.LOG_BASE_URL as string
 
     // Send log
+    const log: cloudflareLog = {
+      ip        : headers.get('cf-connecting-ip')!,
+      path      : new URL(request.url).pathname,
+      host      : headers.get('host')!,
+      country   : cf ? cf.country : null,
+      user_agent: headers.get('user-agent')!
+    }
+
+    const cacheStatus = headers.get('cf-cache-status')
+
+    if (cacheStatus) {
+      log.cache = cacheStatus
+    }
+
     const logReq = fetch(`${logBaseURL}/requests`, {
       method : 'POST',
       headers: {
         'Content-Type' : 'application/json',
         'Authorization': authKey
       },
-      body  : JSON.stringify({
-        ip        : headers.get('cf-connecting-ip'),
-        path      : new URL(request.url).pathname,
-        host      : headers.get('host'),
-        country   : cf ? cf.country : null,
-        user_agent: headers.get('user-agent')
-      })
+      body  : JSON.stringify(log)
     })
 
     event.waitUntil(logReq)

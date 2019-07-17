@@ -17,10 +17,10 @@ const metrics = {
     name: 'cf_count',
     help: 'Amount of times a worker has added stats'
   }),
-  paths: new Counter({
-    name      : 'cf_paths',
-    help      : 'Amount of times a path has been requested',
-    labelNames: ['path', 'host']
+  cache: new Counter({
+    name      : 'cf_cache_statuses',
+    help      : 'Cache status per host',
+    labelNames: ['status', 'host']
   }),
   countries: new Counter({
     name      : 'cf_countries',
@@ -36,6 +36,11 @@ const metrics = {
     name      : 'cf_client_ips',
     help      : 'Amount of times a request has been sent per client ip',
     labelNames: ['ip']
+  }),
+  paths: new Counter({
+    name      : 'cf_paths',
+    help      : 'Amount of times a path has been requested',
+    labelNames: ['path', 'host']
   })
 }
 
@@ -74,6 +79,13 @@ webServer.post('/requests', (req, res) => {
   metrics.clients.inc({
     ip: body.ip
   })
+
+  if (body.cache) {
+    metrics.cache.inc({
+      status: body.cache,
+      host  : body.host
+    })
+  }
 
   res.sendStatus(204)
 })
