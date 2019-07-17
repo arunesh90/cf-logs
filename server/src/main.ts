@@ -13,6 +13,10 @@ import bodyParser = require('body-parser');
 export const webServer = express()
 
 const metrics = {
+  all: new Counter({
+    name: 'cf_count',
+    help: 'Amount of times a worker has added stats'
+  }),
   paths: new Counter({
     name      : 'cf_paths',
     help      : 'Amount of times a path has been requested',
@@ -56,6 +60,7 @@ webServer.get('/metrics', (_zreq, res) => {
 webServer.post('/requests', (req, res) => {
   const { body } = req
 
+  metrics.all.inc()
   metrics.paths.inc({
     path: body.path,
     host: body.host
