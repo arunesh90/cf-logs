@@ -16,7 +16,9 @@ export class Worker {
     const { request } = event
     const { headers } = request
     const { cf }      = request
-    const response = await fetch(request)
+
+    const response   = await fetch(request)
+    const resHeaders = response.headers
 
     const authKey    = process.env.AUTH_KEY as string
     const logBaseURL = process.env.LOG_BASE_URL as string
@@ -30,7 +32,7 @@ export class Worker {
       user_agent: headers.get('user-agent')!
     }
 
-    const cacheStatus = headers.get('cf-cache-status') || headers.get('x-now-cache')
+    const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
 
     if (cacheStatus) {
       log.cache = cacheStatus
