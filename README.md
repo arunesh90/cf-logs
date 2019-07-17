@@ -1,5 +1,6 @@
 # CF-Logs
-A simple worker and server script that will collect logs/metrics
+[![pipeline status](https://gitlab.com/arunesh90/cf-logs/badges/master/pipeline.svg)](https://gitlab.com/arunesh90/cf-logs/pipelines)  
+A simple worker and server script that will collect logs/metrics for Cloudflare
 
 ## Server
 _WIP_
