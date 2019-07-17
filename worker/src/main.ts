@@ -30,7 +30,7 @@ export class Worker {
       user_agent: headers.get('user-agent')!
     }
 
-    const cacheStatus = headers.get('cf-cache-status')
+    const cacheStatus = headers.get('cf-cache-status') || headers.get('x-now-cache')
 
     if (cacheStatus) {
       log.cache = cacheStatus
