@@ -1,0 +1,24 @@
+{
+  "name": "cf-logs-worker",
+  "version": "1.0.0",
+  "description": "Worker for cf-logs",
+  "main": "main.ts",
+  "scripts": {
+    "build": "webpack --progress --mode production # Create minified output, runs in Cloudflare",
+    "build-dev": "webpack --progress --mode none # Creates readable output, runs in Cloudflare",
+    "lint": "tslint --project tsconfig.json",
+    "dev": "cloudworker --watch --debug dist/worker.js"
+  },
+  "author": "Arunesh <hello@arunesh.me>",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^12.6.4",
+    "@udacity/types-service-worker-mock": "^1.0.1",
+    "cloudflare-worker-mock": "^1.0.1",
+    "ts-loader": "^6.0.4",
+    "types-cloudflare-worker": "^1.0.1",
+    "typescript": "^3.5.3",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6"
+  }
+}
