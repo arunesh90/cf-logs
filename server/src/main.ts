@@ -13,10 +13,25 @@ import bodyParser = require('body-parser');
 export const webServer = express()
 
 const metrics = {
-  requests: new Counter({
-    name: 'cf_requests',
-    help: 'The number of requests',
-    labelNames: ['path', 'host', 'ip', 'country', 'user_agent']
+  paths: new Counter({
+    name      : 'cf_paths',
+    help      : 'Amount of times a path has been requested',
+    labelNames: ['path', 'host']
+  }),
+  countries: new Counter({
+    name      : 'cf_countries',
+    help      : 'Amount of times a request has been sent per country',
+    labelNames: ['country']
+  }),
+  user_agents: new Counter({
+    name      : 'cf_user_agents',
+    help      : 'Amount of times a request has been sent per user agent',
+    labelNames: ['user_agent']
+  }),
+  clients: new Counter({
+    name      : 'cf_client_ips',
+    help      : 'Amount of times a request has been sent per client ip',
+    labelNames: ['ip']
   })
 }
 
@@ -41,12 +56,18 @@ webServer.get('/metrics', (_zreq, res) => {
 webServer.post('/requests', (req, res) => {
   const { body } = req
 
-  metrics.requests.inc({
-    ip        : body.ip,
-    path      : body.path,
-    host      : body.host,
-    country   : body.country,
+  metrics.paths.inc({
+    path: body.path,
+    host: body.host
+  })
+  metrics.countries.inc({
+    country: body.country
+  })
+  metrics.user_agents.inc({
     user_agent: body.user_agent
+  })
+  metrics.clients.inc({
+    ip: body.ip
   })
 
   res.sendStatus(204)
