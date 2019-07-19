@@ -9,7 +9,8 @@ interface cloudflareLog {
   country   : string | null,
   user_agent: string,
   cache?    : string,
-  origin?   : string
+  origin?   : string,
+  referrer? : string
 }
 
 export class Worker {
@@ -35,11 +36,14 @@ export class Worker {
 
     const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
     const origin      = headers.get('origin')
+    const referrer    = headers.get('referer')
 
     if (cacheStatus) {
       log.cache = cacheStatus
     } if (origin) {
       log.origin = origin
+    } if (referrer) {
+      log.referrer = referrer
     }
 
     const logReq = fetch(`${logBaseURL}/requests`, {

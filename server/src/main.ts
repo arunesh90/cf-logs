@@ -32,6 +32,11 @@ const metrics = {
     help      : 'Amount of times a request has been sent per country',
     labelNames: ['country']
   }),
+  referrers: new Counter({
+    name      : 'cf_referrers',
+    help      : 'Amount of times has been sent per referrer',
+    labelNames: ['referrer']
+  }),
   user_agents: new Counter({
     name      : 'cf_user_agents',
     help      : 'Amount of times a request has been sent per user agent',
@@ -93,6 +98,10 @@ webServer.post('/requests', (req, res) => {
   } if (body.origin) {
     metrics.origins.inc({
       origin: body.origin
+    })
+  } if (body.referrer) {
+    metrics.referrers.inc({
+      referrer: body.referrer
     })
   }
 
