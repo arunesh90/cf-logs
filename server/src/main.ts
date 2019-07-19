@@ -22,6 +22,11 @@ const metrics = {
     help      : 'Cache status per host',
     labelNames: ['status', 'host']
   }),
+  origins: new Counter({
+    name      : 'cf_origins',
+    help      : 'Amount of times a request has been sent per origin',
+    labelNames: ['origin']
+  }),
   countries: new Counter({
     name      : 'cf_countries',
     help      : 'Amount of times a request has been sent per country',
@@ -84,6 +89,10 @@ webServer.post('/requests', (req, res) => {
     metrics.cache.inc({
       status: body.cache,
       host  : body.host
+    })
+  } if (body.origin) {
+    metrics.origins.inc({
+      origin: body.origin
     })
   }
 

@@ -8,7 +8,8 @@ interface cloudflareLog {
   host      : string,
   country   : string | null,
   user_agent: string,
-  cache?    : string
+  cache?    : string,
+  origin?   : string
 }
 
 export class Worker {
@@ -33,9 +34,12 @@ export class Worker {
     }
 
     const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
+    const origin      = headers.get('origin')
 
     if (cacheStatus) {
       log.cache = cacheStatus
+    } if (origin) {
+      log.origin = origin
     }
 
     const logReq = fetch(`${logBaseURL}/requests`, {
