@@ -35,7 +35,7 @@ export class Worker {
       ip        : headers.get('cf-connecting-ip')!,
       host      : headers.get('host')!,
       userAgent : headers.get('user-agent')!,
-      bodyLength: resHeaders.get('content-length') || (await response.clone().text()).length,
+      bodyLength: parseInt(resHeaders.get('content-length')!, 10) || (await response.clone().text()).length,
       path      : parsedURL.pathname,
       country   : cf ? cf.country : null,
       statusCode: response.status,
