@@ -8,7 +8,8 @@ if (!process.env.AUTH_KEY) {
 
 import express from 'express'
 import { Counter, register } from 'prom-client'
-import bodyParser = require('body-parser');
+import bodyParser from 'body-parser'
+import esClient from './lib/database/elastic'
 
 export const webServer = express()
 
@@ -27,15 +28,15 @@ const metrics = {
     help      : 'Amount of times a request has been sent per origin',
     labelNames: ['origin']
   }),
-  countries: new Counter({
-    name      : 'cf_countries',
-    help      : 'Amount of times a request has been sent per country',
-    labelNames: ['country']
-  }),
   referrers: new Counter({
     name      : 'cf_referrers',
     help      : 'Amount of times has been sent per referrer',
     labelNames: ['referrer']
+  }),
+  countries: new Counter({
+    name      : 'cf_countries',
+    help      : 'Amount of times a request has been sent per country',
+    labelNames: ['country']
   }),
   user_agents: new Counter({
     name      : 'cf_user_agents',
@@ -72,7 +73,7 @@ webServer.get('/metrics', (_zreq, res) => {
 })
 
 
-webServer.post('/requests', (req, res) => {
+webServer.post('/requests', async (req, res) => {
   const { body } = req
 
   metrics.all.inc()
@@ -106,6 +107,15 @@ webServer.post('/requests', (req, res) => {
   }
 
   res.sendStatus(204)
+
+  try {
+    await esClient.index({
+      index: 'cf-logs',
+      body
+    })
+  } catch (err) {
+    console.error('An error has occurred while trying to index', err)
+  }
 })
 
 webServer.listen(80, () => {
