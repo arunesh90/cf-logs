@@ -13,6 +13,7 @@ interface cloudflareLog {
   userAgent   : string
   bodyLength  : number | string
   statusCode  : number
+  timestamp   : Date
   contentType?: string
   cache?      : string
   origin?     : string
@@ -37,7 +38,8 @@ export class Worker {
       bodyLength: resHeaders.get('content-length') || (await response.clone().text()).length,
       path      : parsedURL.pathname,
       country   : cf ? cf.country : null,
-      statusCode: response.status
+      statusCode: response.status,
+      timestamp : new Date()
     }
 
     const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
