@@ -43,9 +43,9 @@ export class Worker {
     }
 
     const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
+    const contentType = resHeaders.get('content-type')
     const origin      = headers.get('origin')
     const referrer    = headers.get('referer')
-    const contentType = headers.get('content-type')
 
     if (contentType) {
       log.contentType = contentType.split(';')[0]
