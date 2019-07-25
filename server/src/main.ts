@@ -85,7 +85,7 @@ webServer.post('/requests', async (req, res) => {
     country: body.country
   })
   metrics.user_agents.inc({
-    user_agent: body.user_agent
+    user_agent: body.userAgent
   })
   metrics.clients.inc({
     ip: body.ip
