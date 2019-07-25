@@ -76,35 +76,35 @@ webServer.get('/metrics', (_zreq, res) => {
 webServer.post('/requests', async (req, res) => {
   const { body } = req
 
-  metrics.all.inc()
-  metrics.paths.inc({
-    path: body.path,
-    host: body.host
-  })
-  metrics.countries.inc({
-    country: body.country
-  })
-  metrics.user_agents.inc({
-    user_agent: body.userAgent
-  })
-  metrics.clients.inc({
-    ip: body.ip
-  })
+  // metrics.all.inc()
+  // metrics.paths.inc({
+  //   path: body.path,
+  //   host: body.host
+  // })
+  // metrics.countries.inc({
+  //   country: body.country
+  // })
+  // metrics.user_agents.inc({
+  //   user_agent: body.userAgent
+  // })
+  // metrics.clients.inc({
+  //   ip: body.ip
+  // })
 
-  if (body.cache) {
-    metrics.cache.inc({
-      status: body.cache,
-      host  : body.host
-    })
-  } if (body.origin) {
-    metrics.origins.inc({
-      origin: body.origin
-    })
-  } if (body.referrer) {
-    metrics.referrers.inc({
-      referrer: body.referrer
-    })
-  }
+  // if (body.cache) {
+  //   metrics.cache.inc({
+  //     status: body.cache,
+  //     host  : body.host
+  //   })
+  // } if (body.origin) {
+  //   metrics.origins.inc({
+  //     origin: body.origin
+  //   })
+  // } if (body.referrer) {
+  //   metrics.referrers.inc({
+  //     referrer: body.referrer
+  //   })
+  // }
 
   res.sendStatus(204)
 
