@@ -14,8 +14,12 @@ interface cloudflareLog {
   bodyLength  : number | string
   statusCode  : number
   timestamp   : Date
+  headers?    : any
+  reqHeaders? : any
   contentType?: string
   cache?      : string
+  cfCache?    : string
+  zeitCache?  : string
   origin?     : string
   referrer?   : string
 }
@@ -31,7 +35,7 @@ export class Worker {
     const parsedURL  = new URL(request.url)
 
     // Send log
-    const log: cloudflareLog = {
+    let log: cloudflareLog = {
       ip        : headers.get('cf-connecting-ip')!,
       host      : headers.get('host')!,
       userAgent : headers.get('user-agent')!,
@@ -43,6 +47,8 @@ export class Worker {
     }
 
     const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
+    const cfCache     = resHeaders.get('cf-cache-status')
+    const zeitCache   = resHeaders.get('x-now-cache')
     const contentType = resHeaders.get('content-type')
     const origin      = headers.get('origin')
     const referrer    = headers.get('referer')
@@ -51,11 +57,27 @@ export class Worker {
       log.contentType = contentType.split(';')[0]
     } if (cacheStatus) {
       log.cache = cacheStatus
+    } if (cfCache) {
+      log.cfCache = cfCache
+    } if (zeitCache) {
+      log.zeitCache = zeitCache
     } if (origin) {
       log.origin = origin
     } if (referrer) {
       log.referrer = referrer
     }
+
+    log.headers = {}
+    // @ts-ignore
+    Array.from(resHeaders).forEach(([key, value]) => {
+      log.headers[key] = value
+    })
+
+    log.reqHeaders = {}
+    // @ts-ignore
+    Array.from(request).forEach(([key, value]) => {
+      log.reqHeaders[key] = value
+    })
 
     const logReq = fetch(`${logBaseURL}/requests`, {
       method : 'POST',
