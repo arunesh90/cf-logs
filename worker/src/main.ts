@@ -67,18 +67,6 @@ export class Worker {
       log.referrer = referrer
     }
 
-    log.headers = {}
-    // @ts-ignore
-    Array.from(resHeaders).forEach(([key, value]) => {
-      log.headers[key] = value
-    })
-
-    log.reqHeaders = {}
-    // @ts-ignore
-    Array.from(request).forEach(([key, value]) => {
-      log.reqHeaders[key] = value
-    })
-
     const logReq = fetch(`${logBaseURL}/requests`, {
       method : 'POST',
       headers: {
