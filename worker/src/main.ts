@@ -14,6 +14,7 @@ interface cloudflareLog {
   bodyLength  : number | string
   statusCode  : number
   timestamp   : Date
+  responseTime: number
   headers?    : any
   reqHeaders? : any
   contentType?: string
@@ -30,20 +31,26 @@ export class Worker {
     const { headers } = request
     const { cf }      = request
 
+    const resTimingStart = Date.now()
+
     const response   = await fetch(request)
     const resHeaders = response.headers
     const parsedURL  = new URL(request.url)
 
+    const resTimingStop = Date.now()
+    const resTiming     = resTimingStop - resTimingStart
+
     // Send log
     let log: cloudflareLog = {
-      ip        : headers.get('cf-connecting-ip')!,
-      host      : headers.get('host')!,
-      userAgent : headers.get('user-agent')!,
-      bodyLength: parseInt(resHeaders.get('content-length')!, 10) || (await response.clone().text()).length,
-      path      : parsedURL.pathname,
-      country   : cf ? cf.country : null,
-      statusCode: response.status,
-      timestamp : new Date()
+      ip          : headers.get('cf-connecting-ip')!,
+      host        : headers.get('host')!,
+      userAgent   : headers.get('user-agent')!,
+      bodyLength  : parseInt(resHeaders.get('content-length')!, 10) || (await response.clone().text()).length,
+      path        : parsedURL.pathname,
+      country     : cf ? cf.country                                                                          : null,
+      statusCode  : response.status,
+      timestamp   : new Date(),
+      responseTime: resTiming
     }
 
     const cacheStatus = resHeaders.get('cf-cache-status') || resHeaders.get('x-now-cache')
